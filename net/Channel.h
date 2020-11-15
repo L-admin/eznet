@@ -42,6 +42,7 @@ namespace net
         int index() { return index_; }
         void set_index(int idx) { index_ = idx; }
         EventLoop *ownerLoop() { return loop_; }
+        void remove();
 
         void enableReading()
         {

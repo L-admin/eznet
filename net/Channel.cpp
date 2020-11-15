@@ -14,8 +14,17 @@ namespace net
                                                 fd_(fd),
                                                 events_(0),
                                                 revents_(0),
-                                                index_(-1)  /* -1 默认表示创建 */
+                                                index_(-1) /* -1 默认表示创建 */
     {
+    }
+
+    void Channel::remove()
+    {
+        if (!isNoneEvent())
+        {
+            return;
+        }
+        loop_->removeChannel(this);
     }
 
     void Channel::update()

@@ -1,6 +1,9 @@
 #!/bin/bash
 
-g++ -g  ./base/AsyncLog.cpp ./base/Timestamp.cpp  \
-    ./net/EpollPoller.cpp ./net/Channel.cpp  \
-    ./net/Timer.cpp  ./net/TimerQueue.cpp ./net/EventLoop.cpp \
+g++ -g ./log/AsyncLog.cpp \
+    ./net/Timestamp.cpp ./net/Timer.cpp  ./net/TimerQueue.cpp \
+    ./net/EventLoop.cpp ./net/EpollPoller.cpp ./net/Channel.cpp \
+    ./net/EventLoopThread.cpp \
+    ./net/InetAddress.cpp ./net/Sockets.cpp \
+    ./net/Acceptor.cpp \
     ./main.cpp  -o main -lpthread

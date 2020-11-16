@@ -2,7 +2,7 @@
 
 #include <functional>
 #include <string>
-#include "../base/Timestamp.h"
+#include "Timestamp.h"
 
 namespace net
 {

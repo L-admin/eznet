@@ -1,7 +1,7 @@
 #pragma once
 #include <map>
 #include <vector>
-#include "../base/Timestamp.h"
+#include "Timestamp.h"
 #include <sys/epoll.h>
 
 namespace net

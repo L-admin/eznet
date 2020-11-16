@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../base/Timestamp.h"
+#include "Timestamp.h"
 #include "Callback.h"
 #include <atomic>
 #include <stdint.h>

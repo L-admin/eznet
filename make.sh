@@ -6,4 +6,6 @@ g++ -g ./log/AsyncLog.cpp \
     ./net/EventLoopThread.cpp \
     ./net/InetAddress.cpp ./net/Sockets.cpp \
     ./net/Acceptor.cpp \
+    ./net/TcpConnection.cpp \
+    ./net/TcpServer.cpp \
     ./main.cpp  -o main -lpthread

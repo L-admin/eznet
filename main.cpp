@@ -1,26 +1,33 @@
 #include "net/EventLoop.h"
-#include "net/InetAddress.h"
-#include "net/Acceptor.h"
-#include <unistd.h>
+#include "net/TcpConnection.h"
+#include "net/TcpServer.h"
+#include <stdio.h>
+
 using namespace net;
 
-void newConnection(int sockfd, const InetAddress& peerAddr)
+void onConnection(const TcpConnectionPtr &conn)
 {
-    printf("newConnection from %s\n", peerAddr.toIpPort().c_str());
-    write(sockfd, "how are you?\n", 13);
-    close(sockfd);
+    if (conn->connected())
+    {
+        printf("onConnection(): new connection [%s] from %s\n",
+               conn->name().c_str(),
+               conn->peerAddress().toIpPort().c_str());
+    }
+}
+
+void onMessage(const TcpConnectionPtr &conn, Buffer *buffer, Timestamp receiveTime)
+{
+    printf("onMessage(): recceived\n");
 }
 
 int main()
 {
     InetAddress listenAddr(9981);
-
     EventLoop loop;
-
-    Acceptor acceptor(&loop, listenAddr);
-
-    acceptor.setNewConnectionCallback(newConnection);
-    acceptor.listen();
+    TcpServer server(&loop, listenAddr, "Test");
+    server.setConnectionCallback(onConnection);
+    server.setMessageCallback(onMessage);
+    server.start();
 
     loop.loop();
 }

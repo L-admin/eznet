@@ -6,53 +6,51 @@
 
 namespace net
 {
-    TcpServer::TcpServer(EventLoop *loop,
-                         const InetAddress &listenAddr,
-                         const std::string &nameArg)
-        : name_(nameArg),
-          listenAddr_(listenAddr),
-          loop_(loop),
-          acceptor_(new Acceptor(loop, listenAddr)),
-          started_(0),
-          nextConnId_(1)
+TcpServer::TcpServer(EventLoop *loop,
+                     const InetAddress &listenAddr)
+    : listenAddr_(listenAddr),
+      loop_(loop),
+      acceptor_(new Acceptor(loop, listenAddr)),
+      started_(0),
+      nextConnId_(1)
+{
+    acceptor_->setNewConnectionCallback(std::bind(&TcpServer::newConnection,
+                                                  this,
+                                                  std::placeholders::_1,
+                                                  std::placeholders::_2));
+}
+
+TcpServer::~TcpServer()
+{
+}
+
+void TcpServer::start()
+{
+    if (started_ == 0)
     {
-        acceptor_->setNewConnectionCallback(std::bind(&TcpServer::newConnection,
-                                                      this,
-                                                      std::placeholders::_1,
-                                                      std::placeholders::_2));
+        acceptor_->listen();
+        started_ = 1;
     }
+}
 
-    TcpServer::~TcpServer()
-    {
-    }
+void TcpServer::newConnection(int sockfd, const InetAddress &peerAddr)
+{
+    loop_->assertInLoopThread();
 
-    void TcpServer::start()
-    {
-        if (started_ == 0)
-        {
-            acceptor_->listen();
-            started_ = 1;
-        }
-    }
+    char buf[32] = {0};
+    snprintf(buf, sizeof(buf), "%s#%d", listenAddr_.toIpPort().c_str(), nextConnId_);
+    ++nextConnId_;
+    string connName = buf;
 
-    void TcpServer::newConnection(int sockfd, const InetAddress &peerAddr)
-    {
-        loop_->assertInLoopThread();
+    LOGD("TcpServer::new connection [%s] from %s",
+         connName.c_str(), peerAddr.toIpPort().c_str());
 
-        char buf[32] = {0};
-        snprintf(buf, sizeof(buf), ":%s#%d", listenAddr_.toIpPort().c_str(), nextConnId_);
-        ++nextConnId_;
-        string connName = name_ + buf;
+    TcpConnectionPtr conn(new TcpConnection(loop_, connName, sockfd, listenAddr_, peerAddr));
 
-        LOGD("TcpServer::newConnection [%s] - new connection [%s] from %s",
-             name_.c_str(), connName.c_str(), peerAddr.toIpPort().c_str());
+    connections_[connName] = conn;
 
-        TcpConnectionPtr conn(new TcpConnection(loop_, connName, sockfd, listenAddr_, peerAddr));
-
-        connections_[connName] = conn;
-
-        conn->setConnectionCallback(connectionCallback_);
-        conn->setMessageCallback(messageCallback_);
-        conn->connectEstablished();
-    }
+    conn->setConnectionCallback(connectionCallback_);
+    conn->setMessageCallback(messageCallback_);
+    conn->connectEstablished();
+}
 } // namespace net

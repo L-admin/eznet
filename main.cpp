@@ -24,7 +24,7 @@ int main()
 {
     InetAddress listenAddr(9981);
     EventLoop loop;
-    TcpServer server(&loop, listenAddr, "Test");
+    TcpServer server(&loop, listenAddr);
     server.setConnectionCallback(onConnection);
     server.setMessageCallback(onMessage);
     server.start();

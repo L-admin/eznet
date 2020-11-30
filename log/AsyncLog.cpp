@@ -286,7 +286,6 @@ bool CAsyncLog::outputBinary(unsigned char *buffer, size_t size)
             lprintbufsize = (size - lsize);
             lprintbufsize = lprintbufsize > PRINTSIZE ? PRINTSIZE : lprintbufsize;
             formLog(index, szbuf, sizeof(szbuf), buffer + lsize, lprintbufsize);
-            size_t len = strlen(szbuf);
 
             //if (stream().buffer().avail() < static_cast<int>(len))
             //{

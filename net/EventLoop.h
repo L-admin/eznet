@@ -76,11 +76,11 @@ namespace net
     private:
         Timestamp pollReturnTime_;
 
-        const std::thread::id threadId_;
-
         bool looping_; /* atomic */
 
         bool quit_;
+
+        const std::thread::id threadId_;
 
         ChannelList activeChannels_;
 

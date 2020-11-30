@@ -48,7 +48,14 @@ namespace net
             messageCallback_ = cb;
         }
 
+        void setCloseCallback(const CloseCallback &cb)
+        {
+            closeCallback_ = cb;
+        }
+
         void connectEstablished();
+
+        void connectDestroyed();
 
     private:
         enum class StateE
@@ -59,14 +66,17 @@ namespace net
             kDisconnected,
         };
 
-    private:
         void setState(StateE s)
         {
             state_ = s;
         }
 
-        void handleRead(Timestamp receiveTime);
         const char *stateToString() const;
+
+        void handleRead(Timestamp receiveTime);
+        void handleClose();
+        void handleError();
+        void handleWrite();
 
     private:
         EventLoop *loop_;
@@ -78,5 +88,6 @@ namespace net
         InetAddress peerAddr_;
         ConnectionCallback connectionCallback_;
         MessageCallback messageCallback_;
+        CloseCallback closeCallback_;
     };
 } // namespace net

@@ -43,5 +43,7 @@ namespace net
         void listenOrDie(int sockfd);
 
         int accept(int sockfd, struct sockaddr_in *addr);
+
+        int getSocketError(int sockfd);
     } // namespace sockets
 } // namespace net

@@ -8,61 +8,63 @@
 
 namespace net
 {
-class Acceptor;
-class EventLoop;
-class EventLoopThreadPool;
+    class Acceptor;
+    class EventLoop;
+    class EventLoopThreadPool;
 
-class TcpServer
-{
-public:
-    TcpServer(EventLoop *loop,
-              const InetAddress &listenAddr);
-
-    ~TcpServer();
-
-    const InetAddress &listenAddr() const { return listenAddr_; }
-
-    EventLoop *getLoop() const { return loop_; }
-
-    void start();
-
-    void removeConnection(const TcpConnectionPtr &conn);
-
-    void setConnectionCallback(const ConnectionCallback &cb)
+    class TcpServer
     {
-        connectionCallback_ = cb;
-    }
+    public:
+        TcpServer(EventLoop *loop,
+                  const InetAddress &listenAddr);
 
-    void setWriteCompleteCallback(const WriteCompleteCallback &cb)
-    {
-        writeCompleteCallback_ = cb;
-    }
+        ~TcpServer();
 
-    void setMessageCallback(const MessageCallback &cb)
-    {
-        messageCallback_ = cb;
-    }
+        const InetAddress &listenAddr() const { return listenAddr_; }
 
-private:
-    /// Not thread safe, but in loop
-    void newConnection(int sockfd, const InetAddress &peerAddr);
+        EventLoop *getLoop() const { return loop_; }
 
-private:
-    InetAddress listenAddr_;
+        void start();
 
-    EventLoop *loop_; // the acceptor loop
+        void removeConnection(const TcpConnectionPtr &conn);
 
-    std::unique_ptr<Acceptor> acceptor_;
+        void setConnectionCallback(const ConnectionCallback &cb)
+        {
+            connectionCallback_ = cb;
+        }
 
-    std::atomic<int> started_; // TODO: 为什么不用bool
+        void setWriteCompleteCallback(const WriteCompleteCallback &cb)
+        {
+            writeCompleteCallback_ = cb;
+        }
 
-    std::map<std::string, TcpConnectionPtr> connections_;
+        void setMessageCallback(const MessageCallback &cb)
+        {
+            messageCallback_ = cb;
+        }
 
-    int nextConnId_; // always in loop thread
+    private:
+        /// Not thread safe, but in loop
+        void newConnection(int sockfd, const InetAddress &peerAddr);
 
-    ConnectionCallback connectionCallback_;
-    MessageCallback messageCallback_;
-    WriteCompleteCallback writeCompleteCallback_;
-};
+        void removeConnectionInLoop(const TcpConnectionPtr &conn);
+
+    private:
+        InetAddress listenAddr_;
+
+        EventLoop *loop_; // the acceptor loop
+
+        std::unique_ptr<Acceptor> acceptor_;
+
+        std::atomic<int> started_; // TODO: 为什么不用bool
+
+        std::map<std::string, TcpConnectionPtr> connections_;
+
+        int nextConnId_; // always in loop thread
+
+        ConnectionCallback connectionCallback_;
+        MessageCallback messageCallback_;
+        WriteCompleteCallback writeCompleteCallback_;
+    };
 
 } // namespace net

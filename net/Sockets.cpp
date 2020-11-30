@@ -146,5 +146,17 @@ namespace net
 
             return connfd;
         }
+
+        int getSocketError(int sockfd)
+        {
+            int optval;
+            socklen_t optlen = static_cast<socklen_t>(sizeof optval);
+            if (::getsockopt(sockfd, SOL_SOCKET, SO_ERROR, &optval, &optlen) < 0)
+            {
+                return errno;
+            }
+
+            return optval;
+        }
     } // namespace sockets
 } // namespace net
